@@ -64,7 +64,7 @@ class HomeFragment : Fragment() {
                 NewTaskFragment.NEW_TASK_RESULT_KEY,
             ) { key, data ->
                 val title = data.getString(NewTaskFragment.NEW_TASK_TITLE_KEY)
-                val description = data.getString(NewTaskFragment.NEW_TASK_DESCRIPTION_KEY)
+                val description = data.getString(NewTaskFragment.NEW_TASK_DESC_KEY)
 
                 if (title != null) {
                     val taskModel = TaskModel(title, description ?: "")

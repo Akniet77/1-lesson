@@ -1,77 +1,89 @@
-
 package com.example.a1_lesson.ui.profile
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.example.a1_lesson.databinding.FragmentProfileBinding
-
+import com.example.a1_lesson.utils.Preferences
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    var imageView: ImageView? = null
-    var editText: EditText? = null
-    var image: Uri? = null
+
+    private val getContent = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { imageUri: Uri? ->
+        if (imageUri != null) {
+            binding.civProfile.setImageURI(imageUri)
+            val preferences = Preferences(requireContext())
+            preferences.setPrefImage(imageUri.toString())
+        }
+    }
 
 
-
+    companion object {
+        const val MIMETYPE_IMAGES = "image/*"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val profile = view.findViewById<ImageView>(com.example.a1_lesson.R.id.profile_picture)
+        initViews()
+        initListeners()
+    }
 
-        val profilePick = registerForActivityResult<Intent, ActivityResult>(
-            ActivityResultContracts.StartActivityForResult()
-        ){ result: ActivityResult ->
-            image = result.data!!.data
-            Glide.with(this)
-                .load(image)
-                .timeout(60)
-                .centerCrop()
-                .apply(RequestOptions.bitmapTransform(RoundedCorners(100)))
-                .into(profile)
-
-        }
-        profile.setOnClickListener { view1: View? ->
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            profilePick.launch(intent)
+    private fun initListeners() {
+        binding.civProfile.setOnClickListener {
+            getContent.launch(MIMETYPE_IMAGES)
         }
     }
 
+    private fun initViews() {
+        val preferences = Preferences(requireContext())
+
+        //Если данные из SharedPreferences не null тогда их применим
+        if (preferences.getPrefTitle() != "") {
+            binding.edtProfile.setText(
+                preferences.getPrefTitle()
+            )
+        }
+        try {
+            Log.d("ololo", preferences.getPrefImage().toString())
+            if (preferences.getPrefImage() != "") {
+                Glide.with(this).load(preferences.getPrefImage()).into(binding.civProfile)
+            }
+//            binding.civProfile.setImageURI(Uri.parse(preferences.getPrefImage().toString()))
+        } catch (e: java.lang.Exception) {
+            Log.d("ololo", "Exeption ${e.message.toString()}")
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        //Сохранение в SharedPreferences
+        val preferences = Preferences(requireContext())
+        preferences.setPrefTitle(binding.edtProfile.text.toString())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         _binding = null
     }
 }
-
-
-

@@ -38,7 +38,3 @@ class TaskAdapter(private val tasks: MutableList<TaskModel>): RecyclerView.Adapt
 
 }
 
-data class TaskModel(
-    val title: String,
-    val description: String,
-)
