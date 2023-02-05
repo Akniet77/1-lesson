@@ -5,7 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a1_lesson.databinding.ItemTaskBinding
 
-class TaskAdapter(private val tasks: MutableList<TaskModel>): RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+class TaskAdapter(private val tasks: MutableList<TaskModel>):
+    RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+
 
     fun add(task: TaskModel){
         tasks.add(0,task)
@@ -33,8 +35,6 @@ class TaskAdapter(private val tasks: MutableList<TaskModel>): RecyclerView.Adapt
             binding.tvTitle.text = task.title
             binding.tvDesc.text = task.description
         }
-
     }
-
 }
 

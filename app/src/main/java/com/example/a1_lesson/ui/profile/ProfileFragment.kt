@@ -6,9 +6,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.a1_lesson.R
 import com.example.a1_lesson.databinding.FragmentProfileBinding
 import com.example.a1_lesson.utils.Preferences
 
@@ -17,20 +19,18 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val getContent = registerForActivityResult(
+
+    private val imagePicture = registerForActivityResult(
+
         ActivityResultContracts.GetContent()
-    ) { imageUri: Uri? ->
-        if (imageUri != null) {
-            binding.civProfile.setImageURI(imageUri)
-            val preferences = Preferences(requireContext())
-            preferences.setPrefImage(imageUri.toString())
+    ) { uri  ->
+        if (uri != null) {
+           Preferences(requireContext()).saveProfilePicture(uri)
         }
+        binding?.civProfile?.setImageURI(uri)
     }
 
 
-    companion object {
-        const val MIMETYPE_IMAGES = "image/*"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,43 +43,38 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initViews()
         initListeners()
     }
 
     private fun initListeners() {
-        binding.civProfile.setOnClickListener {
-            getContent.launch(MIMETYPE_IMAGES)
+        binding.civProfile.setOnClickListener{
+            imagePicture.launch("image/*")
+        }
+
+        binding.save.setOnClickListener {
+            val name = binding.edtProfile.text.toString()
+            Preferences(requireContext()).saveProfileName(name)
         }
     }
 
     private fun initViews() {
-        val preferences = Preferences(requireContext())
+        val pref = Preferences(requireContext())
 
-        //Если данные из SharedPreferences не null тогда их применим
-        if (preferences.getPrefTitle() != "") {
-            binding.edtProfile.setText(
-                preferences.getPrefTitle()
-            )
+        pref.getProfilePicture()?.let {
+            Glide.with(requireContext())
+                .load(it)
+                .circleCrop()
+                .into(binding?.civProfile!!)
         }
-        try {
-            Log.d("ololo", preferences.getPrefImage().toString())
-            if (preferences.getPrefImage() != "") {
-                Glide.with(this).load(preferences.getPrefImage()).into(binding.civProfile)
-            }
-//            binding.civProfile.setImageURI(Uri.parse(preferences.getPrefImage().toString()))
-        } catch (e: java.lang.Exception) {
-            Log.d("ololo", "Exeption ${e.message.toString()}")
+
+        pref.getProfileName()?.let {
+            binding?.edtProfile?.setText(it)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        //Сохранение в SharedPreferences
-        val preferences = Preferences(requireContext())
-        preferences.setPrefTitle(binding.edtProfile.text.toString())
     }
 
     override fun onDestroy() {
@@ -87,3 +82,4 @@ class ProfileFragment : Fragment() {
         _binding = null
     }
 }
+

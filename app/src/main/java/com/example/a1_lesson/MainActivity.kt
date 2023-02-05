@@ -1,7 +1,9 @@
 package com.example.a1_lesson
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -33,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         val preferences = Preferences(this)
-        if (preferences.isHaveSeenOnBoarding()) {
+        if (preferences.getHaveSeenOnBoarding()) {
             navController.navigate(
                 R.id.navigation_home
             )

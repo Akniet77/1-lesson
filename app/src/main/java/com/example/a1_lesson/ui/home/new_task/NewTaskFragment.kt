@@ -2,6 +2,7 @@ package com.example.a1_lesson.ui.home.new_task
 
 import android.net.Uri
 import android.os.Bundle
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.example.a1_lesson.databinding.FragmentNewTaskBinding
 import com.example.a1_lesson.ui.profile.ProfileFragment
 
 class NewTaskFragment : Fragment() {
+    
 
     private var _binding: FragmentNewTaskBinding? = null
 
@@ -45,6 +47,7 @@ class NewTaskFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initListeners()
@@ -52,9 +55,7 @@ class NewTaskFragment : Fragment() {
 
     private fun initListeners() {
 
-        binding.ivPicture.setOnClickListener {
-            imagePicker.launch(ProfileFragment.MIMETYPE_IMAGES)
-        }
+
 
         binding.btnSave.setOnClickListener {
             val bundle = bundleOf(

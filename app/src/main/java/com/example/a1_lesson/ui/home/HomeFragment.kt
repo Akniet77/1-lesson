@@ -1,20 +1,17 @@
 package com.example.a1_lesson.ui.home
 
+//noinspection SuspiciousImport
+import android.app.AlertDialog
+import android.content.ClipData
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.a1_lesson.R
-
-//noinspection SuspiciousImport
 import com.example.a1_lesson.databinding.FragmentHomeBinding
 import com.example.a1_lesson.ui.home.new_task.NewTaskFragment
 import com.example.a1_lesson.ui.home.new_task.TaskAdapter
@@ -25,10 +22,11 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+
     private val binding get() = _binding!!
     private val taskAdapter = TaskAdapter(mutableListOf())
+    val dataSource = mutableListOf<ClipData.Item>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,13 +43,14 @@ class HomeFragment : Fragment() {
 
         initView()
         initListeners()
+
     }
+
 
     private fun initView() {
         binding.rvTasks.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = taskAdapter
-
         }
 
     }
@@ -70,15 +69,13 @@ class HomeFragment : Fragment() {
                     val taskModel = TaskModel(title, description ?: "")
                     taskAdapter.add(taskModel)
                 }
-
             }
-
         }
     }
 
 
 
-        override fun onDestroyView() {
+    override fun onDestroyView() {
             super.onDestroyView()
             _binding = null
         }
